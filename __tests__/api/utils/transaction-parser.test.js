@@ -71,4 +71,12 @@ describe('transactionParser tests', () => {
     const transactions = transactionParser(rawData);
     expect(transactions.length).toBe(0);
   });
+
+  test('should throw error when fail to parse', () => {
+    const rawData = `<table><tbody><tr>
+    <td>something not valid</td>  
+    </tr></tbody></table>
+  `;
+    expect(() => transactionParser(rawData)).toThrow('failed to parse transactions from etherscan.');
+  });
 });
