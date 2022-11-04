@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const transactionParser = require('../../../api/utils/transactions-paser.js');
+const transactionParser = require('../../../api/utils/transactions-parser.js');
 
 describe('transactionParser tests', () => {
   test('should return empty when rawData is not valid', () => {
