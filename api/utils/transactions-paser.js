@@ -2,6 +2,9 @@ const cheerio = require('cheerio');
 
 const transactionParser = (rawData) => {
   const $ = cheerio.load(rawData);
+  if ($('tbody .alert').length) {
+    return [];
+  }
   return $('tbody > tr')
     .map((_, element) => {
       const $element = $(element);

@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const transactionParser = require('../../../api/utils/transactionsPaser.js');
+const transactionParser = require('../../../api/utils/transactions-paser.js');
 
 describe('transactionParser tests', () => {
   test('should return empty when rawData is not valid', () => {
@@ -61,5 +61,14 @@ describe('transactionParser tests', () => {
     const transactions = transactionParser(rawData);
     expect(transactions.length).toBe(1);
     expect(transactions[0].to).toEqual('0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45');
+  });
+
+  test('should return empty when there are no matching entries', () => {
+    const rawData = `<table><tbody><tr>
+    <td><span class="alert">There are no matching entries<span></td>  
+    </tr></tbody></table>
+  `;
+    const transactions = transactionParser(rawData);
+    expect(transactions.length).toBe(0);
   });
 });
