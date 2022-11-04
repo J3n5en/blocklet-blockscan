@@ -1,25 +1,27 @@
 const cacheMiddleware = require('../../../api/middlewares/cache-middleware.js');
 
 describe('cacheMiddleware tests', () => {
-  test('should overwrite res.json when do not have cache', async () => {
+  test('should overwrite res.end when do not have cache', async () => {
     const cache = cacheMiddleware({ timeout: 50 });
     const req = { originalUrl: '/path/1111' };
-    const json = jest.fn();
+    const end = jest.fn();
     const res = {
-      json,
+      statusCode: 200,
+      end,
     };
     cache(req, res, jest.fn());
-    expect(res.json).not.toEqual(json);
+    expect(res.end).not.toEqual(end);
   });
 
   test('should response the cache when have cache', async () => {
     const cache = cacheMiddleware({ timeout: 50 });
     const req = { originalUrl: '/path/2222' };
     const res = {
-      json: jest.fn(),
+      statusCode: 200,
+      end: jest.fn(),
     };
     cache(req, res, jest.fn());
-    res.json({});
+    res.end({});
 
     const next = jest.fn();
     cache(req, res, next);
@@ -33,10 +35,11 @@ describe('cacheMiddleware tests', () => {
     const cache = cacheMiddleware({ timeout: 50 });
     const req = { originalUrl: '/path/333' };
     const res = {
-      json: jest.fn(),
+      statusCode: 200,
+      end: jest.fn(),
     };
     cache(req, res, jest.fn());
-    res.json({});
+    res.end({});
     const next = jest.fn();
 
     cache(req, res, next);
@@ -45,6 +48,21 @@ describe('cacheMiddleware tests', () => {
     await new Promise((resolve) => {
       setTimeout(resolve, 100);
     });
+    cache(req, res, next);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  test('should cache 200 response only', () => {
+    const cache = cacheMiddleware({ timeout: 50 });
+    const req = { originalUrl: '/path/2222' };
+    const res = {
+      statusCode: 500,
+      end: jest.fn(),
+    };
+    cache(req, res, jest.fn());
+    res.end({});
+
+    const next = jest.fn();
     cache(req, res, next);
     expect(next).toHaveBeenCalledTimes(1);
   });

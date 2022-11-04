@@ -6,18 +6,22 @@ const cacheMiddleware =
   async (req, res, next) => {
     const id = req.originalUrl;
 
-    const _json = res.json;
+    const _end = res.end;
     if (cache.has(id)) {
-      const { body, createdAt } = cache.get(id);
+      const { body, createdAt, encoding } = cache.get(id);
       if (+new Date() - createdAt <= timeout) {
-        return res.json(body);
+        return res.end(body, encoding);
       }
       cache.delete(id);
     }
 
-    res.json = (body) => {
-      cache.set(id, { body, createdAt: +new Date() });
-      return _json.call(res, body);
+    res.end = function (chunk, encoding) {
+      if (res.statusCode === 200) {
+        cache.set(id, { body: chunk, createdAt: +new Date(), encoding });
+      }
+
+      res.end = _end;
+      return res.end(chunk, encoding);
     };
     return next();
   };
