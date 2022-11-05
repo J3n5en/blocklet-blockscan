@@ -44,7 +44,7 @@ function Home() {
             isLoading={isLoading}
             onChange={onPageChange}
             defaultPageSize={pageSize}
-            hasNext={transactions?.length}
+            hasNext={!!transactions?.length}
           />
         </div>
       )}
